@@ -1,7 +1,11 @@
 from rest_framework import serializers
-from .models import VisitorAnalytics
+from .models import TrackedSite, Visitor, session, pageview
 
-class VisitorAnalyticsSerializer(serializers.ModelSerializer):
+class TrackedSiteCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = VisitorAnalytics
-        fields = '__all__'
+        model = TrackedSite
+        fields = ['site_name', 'domain']
+    def validate_domain(self, value):
+        if not value:
+            raise serializers.ValidationError("Domain cannot be empty.")
+        return value
