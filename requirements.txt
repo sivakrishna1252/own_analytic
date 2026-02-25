@@ -1,0 +1,8 @@
+Django
+djangorestframework
+psycopg2
+geoip2
+user-agents
+django-ratelimit
+PyYAML
+python-decouple
