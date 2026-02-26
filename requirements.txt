@@ -6,3 +6,4 @@ user-agents
 django-ratelimit
 PyYAML
 python-decouple
+python-dotenv

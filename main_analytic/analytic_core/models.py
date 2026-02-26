@@ -49,6 +49,7 @@ class session(models.Model):
     country = models.CharField(max_length=100, null=True, blank=True)
     user_agent = models.TextField(null=True, blank=True)
     start_time = models.DateTimeField(auto_now_add=True)
+    last_activity = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
     duration = models.IntegerField(default=0)
     browser = models.CharField(max_length=100, null=True, blank=True)
