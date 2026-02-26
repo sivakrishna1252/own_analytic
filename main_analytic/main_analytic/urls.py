@@ -16,14 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.http import HttpResponse
- 
+from django.http import HttpResponse, FileResponse
+from django.conf import settings
+from django.conf.urls.static import static
+import os
+
 def home(request):
     return HttpResponse("winter is coming")
+
+def serve_tracker(request):
+    tracker_path = os.path.join(settings.BASE_DIR, 'static', 'tracker.js')
+    if os.path.exists(tracker_path):
+        return FileResponse(open(tracker_path, 'rb'), content_type='application/javascript')
+    return HttpResponse("// tracker.js not found", status=404)
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home),
     path('api/', include('analytic_core.urls')),
-]
+    path('tracker.js', serve_tracker, name='serve-tracker'),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT if hasattr(settings, 'STATIC_ROOT') else os.path.join(settings.BASE_DIR, 'static'))

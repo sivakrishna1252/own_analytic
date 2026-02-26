@@ -1,9 +1,9 @@
 from django.db.models import Count
 from analytic_core.models import pageview
 
-def top_pages_report(site_id) -> dict:
+def top_pages(site) -> dict:
     total_pageviews = pageview.objects.filter(
-        session_id__site_id=site_id, 
+        session_id__site_id=site.site_id, 
         session_id__is_bot=False
     ).count()
     
@@ -11,7 +11,7 @@ def top_pages_report(site_id) -> dict:
     
     if total_pageviews > 0:
         pages_data = pageview.objects.filter(
-            session_id__site_id=site_id, 
+            session_id__site_id=site.site_id, 
             session_id__is_bot=False
         ).values('page_url').annotate(
             views=Count('id')
@@ -28,7 +28,10 @@ def top_pages_report(site_id) -> dict:
         "response_code": 200,
         "message": "Top pages report generated successfully",
         "data": {
-            "site_id": str(site_id),
+            "site": {
+                "site_id": str(site.site_id),
+                "site_name": site.site_name
+            },
             "total_pageviews": total_pageviews,
             "pages": pages_list
         }

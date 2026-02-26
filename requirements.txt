@@ -1,9 +1,11 @@
 Django
 djangorestframework
-psycopg2
+psycopg2-binary
 geoip2
 user-agents
 django-ratelimit
 PyYAML
 python-decouple
 python-dotenv
+ua-parser
+django-cors-headers

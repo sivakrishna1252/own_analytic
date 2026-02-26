@@ -1,14 +1,14 @@
 from django.db.models import Count
 from analytic_core.models import session
 
-def countries_report(site_id) -> dict:
-    total_sessions = session.objects.filter(site_id=site_id, is_bot=False).count()
+def countries_report(site) -> dict:
+    total_sessions = session.objects.filter(site_id=site, is_bot=False).count()
     
     countries_list = []
     
     if total_sessions > 0:
         country_data = session.objects.filter(
-            site_id=site_id, 
+            site_id=site, 
             is_bot=False
         ).values('country').annotate(
             sessions=Count('id')
@@ -26,16 +26,16 @@ def countries_report(site_id) -> dict:
                 "percentage": percentage
             })
 
-
-
-
     # Return
     return {
         "status": True,
         "response_code": 200,
         "message": "Countries report generated successfully",
         "data": {
-            "site_id": str(site_id),
+            "site": {
+                "site_id": str(site.site_id),
+                "site_name": site.site_name
+            },
             "total_sessions": total_sessions,
             "countries": countries_list
         }

@@ -10,6 +10,7 @@ from .models import pageview, session, TrackedSite
 from .reports.overview_report import overview_report
 from .reports.countries import countries_report
 from .reports.top_pages import top_pages
+from .reports.visitors import get_visitors_report
 
 #siteapi
 class CreateSiteView(APIView):
@@ -23,7 +24,10 @@ class CreateSiteView(APIView):
                 "status": True,
                 "response_code": 201,
                 "message": "Website created",
-                "site_id": str(site.site_id),
+                "site": {
+                    "site_id": str(site.site_id),
+                    "site_name": site.site_name
+                },
                 "api_key": site.api_key,
                 "tracking_script": tracking_script
             }, status=status.HTTP_201_CREATED)
@@ -47,7 +51,10 @@ class TestApiKeyView(APIView):
                 "status": True,
                 "response_code": 200,
                 "message": "API key valid",
-                "site_name": site.site_name
+                "site": {
+                    "site_id": str(site.site_id),
+                    "site_name": site.site_name
+                }
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({
@@ -111,6 +118,8 @@ class CollectStartView(APIView):
             # Create new PageView
             pageview.objects.create(
                 session_id=track_session,
+                site_id=site,
+                site_name=site.site_name,
                 page_url=page_url
             )
             
@@ -122,6 +131,10 @@ class CollectStartView(APIView):
                 "status": True,
                 "response_code": 200,
                 "message": "Page view logged",
+                "site": {
+                    "site_id": str(site.site_id),
+                    "site_name": site.site_name
+                },
                 "session_id": str(track_session.id)
             }, status=status.HTTP_200_OK)
             
@@ -170,7 +183,11 @@ class CollectPingView(APIView):
             return Response({
                 "status": True,
                 "response_code": 200,
-                "message": "Ping processed successfully"
+                "message": "Ping processed successfully",
+                "site": {
+                    "site_id": str(site.site_id),
+                    "site_name": site.site_name
+                }
             }, status=status.HTTP_200_OK)
             
         except Exception as e:
@@ -227,6 +244,10 @@ class CollectEndView(APIView):
                     "status": True,
                     "response_code": 200,
                     "message": "Session closed",
+                    "site": {
+                        "site_id": str(site.site_id),
+                        "site_name": site.site_name
+                    },
                     "duration": track_session.duration
                 }, status=status.HTTP_200_OK)
             else:
@@ -275,7 +296,7 @@ class OverviewView(APIView):
                 "message": "Invalid site_id format"
             }, status=status.HTTP_400_BAD_REQUEST)
             
-        data = overview_report(site.site_id)
+        data = overview_report(site)
         
         return Response(data, status=status.HTTP_200_OK)
 
@@ -310,7 +331,7 @@ class CountriesReportView(APIView):
                 "message": "Invalid site_id format"
             }, status=status.HTTP_400_BAD_REQUEST)
             
-        data = countries_report(site.site_id)
+        data = countries_report(site)
         
         return Response(data, status=status.HTTP_200_OK)
 
@@ -344,6 +365,39 @@ class TopPagesReportView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
             
         
-        data = top_pages(site.site_id)
+        data = top_pages(site)
+        
+        return Response(data, status=status.HTTP_200_OK)
+
+
+# visitors overview
+class VisitorsReportView(APIView):
+    def get(self, request):
+        site_id = request.query_params.get('site_id')
+        
+        if not site_id:
+            return Response({
+                "status": False,
+                "response_code": 400,
+                "message": "site_id query parameter is required"
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            site = TrackedSite.objects.get(site_id=site_id)
+        except TrackedSite.DoesNotExist:
+            return Response({
+                "status": False,
+                "response_code": 404,
+                "message": f"Site with id {site_id} not found"
+            }, status=status.HTTP_404_NOT_FOUND)
+            
+        except ValueError:
+            return Response({
+                "status": False,
+                "response_code": 400,
+                "message": "Invalid site_id format"
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+        data = get_visitors_report(site)
         
         return Response(data, status=status.HTTP_200_OK)

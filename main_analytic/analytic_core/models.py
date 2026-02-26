@@ -27,6 +27,7 @@ class TrackedSite(models.Model):
 class Visitor(models.Model):
     id=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     site_id=models.ForeignKey(TrackedSite,on_delete=models.CASCADE)
+    site_name = models.CharField(max_length=100, null=True, blank=True)
     visitor_id=models.CharField(max_length=100)
     first_visit=models.DateTimeField(auto_now_add=True)
     last_visit=models.DateTimeField(auto_now=True)
@@ -44,6 +45,7 @@ class Visitor(models.Model):
 class session(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     site_id = models.ForeignKey(TrackedSite, on_delete=models.CASCADE)
+    site_name = models.CharField(max_length=100, null=True, blank=True)
     visitor_id = models.ForeignKey(Visitor, on_delete=models.CASCADE)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
@@ -72,6 +74,8 @@ class session(models.Model):
 class pageview(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     session_id = models.ForeignKey(session, on_delete=models.CASCADE)
+    site_name = models.CharField(max_length=100, null=True, blank=True)
+    site_id = models.ForeignKey(TrackedSite, on_delete=models.CASCADE, null=True, blank=True)
     page_url = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(null=True, blank=True)

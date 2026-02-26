@@ -3,6 +3,7 @@ from django.utils import timezone
 from ..models import session
 from .geoip_service import get_country_from_ip
 from .bot_detection import is_bot_request
+from .system import parse_user_agent
 
 def get_or_create_session(site, visitor, request):
     now = timezone.now()
@@ -42,15 +43,28 @@ def get_or_create_session(site, visitor, request):
     
 
 
+
+
     # detect bot
     is_bot_flag = is_bot_request(user_agent)
     
+
+
+    # detect browser/os/device
+    system_info = parse_user_agent(user_agent)
+    
+
+    
     new_session = session.objects.create(
         site_id=site,
+        site_name=site.site_name,
         visitor_id=visitor,
         ip_address=ip,
         country=country,
         user_agent=user_agent,
+        browser=system_info['browser'],
+        os=system_info['os'],
+        device=system_info['device'],
         last_activity=now,
         is_bot=is_bot_flag
     )
