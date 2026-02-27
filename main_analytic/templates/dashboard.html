@@ -451,15 +451,6 @@
 
         function renderTopPages(data) {
             const tbody = document.querySelector('#top-pages-table tbody');
-            const thead = document.querySelector('#top-pages-table thead tr');
-
-            // Update header if not already updated
-            if (thead.cells.length === 3) {
-                const timeHeader = document.createElement('th');
-                timeHeader.textContent = 'Avg. Time';
-                thead.insertBefore(timeHeader, thead.cells[2]);
-            }
-
             tbody.innerHTML = '';
 
             const maxViews = data.pages.length > 0 ? data.pages[0].views : 1;
@@ -468,9 +459,8 @@
                 const percent = (p.views / maxViews) * 100;
                 tbody.innerHTML += `
                     <tr>
-                        <td style="font-weight: 500; font-size: 0.8rem;">${p.page_url}</td>
+                        <td style="font-weight: 500;">${p.page_url}</td>
                         <td style="font-family: monospace;">${p.views}</td>
-                        <td style="color: var(--text-muted); font-size: 0.85rem;">${formatSeconds(p.avg_duration)}</td>
                         <td>
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: ${percent}%"></div>
