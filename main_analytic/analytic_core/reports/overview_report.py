@@ -36,7 +36,7 @@ def overview_report(site) -> dict:
             },
             "total_visitors": total_visitors,
             "total_sessions": total_sessions,
-            "total_pageviews": total_pageviews,
+            "total_pages_hits": total_pageviews,
             "avg_session_duration": avg_session_duration,
             "bot_sessions": bot_sessions
         }

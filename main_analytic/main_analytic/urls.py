@@ -19,10 +19,11 @@ from django.urls import path, include
 from django.http import HttpResponse, FileResponse
 from django.conf import settings
 from django.conf.urls.static import static
+from django.shortcuts import render
 import os
 
 def home(request):
-    return HttpResponse("winter is coming")
+    return render(request, 'create_site.html')
 
 def serve_tracker(request):
     tracker_path = os.path.join(settings.BASE_DIR, 'static', 'tracker.js')
@@ -34,6 +35,8 @@ def serve_tracker(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home),
+    path('dashboard/', lambda r: render(r, 'dashboard.html')),
+    path('visitors-detail/', lambda r: render(r, 'visitors_detail.html')),
     path('api/', include('analytic_core.urls')),
     path('tracker.js', serve_tracker, name='serve-tracker'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT if hasattr(settings, 'STATIC_ROOT') else os.path.join(settings.BASE_DIR, 'static'))

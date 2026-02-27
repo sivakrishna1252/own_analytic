@@ -11,6 +11,25 @@ from .reports.overview_report import overview_report
 from .reports.countries import countries_report
 from .reports.top_pages import top_pages
 from .reports.visitors import get_visitors_report
+import json
+
+
+def get_request_data(request):
+    try:
+        if request.data:
+            return request.data
+    except Exception:
+        pass
+    
+    if request.body:
+        try:
+            return json.loads(request.body.decode('utf-8'))
+        except (ValueError, UnicodeDecodeError):
+            pass
+    return {}
+
+
+
 
 #siteapi
 class CreateSiteView(APIView):
@@ -71,8 +90,10 @@ class TestApiKeyView(APIView):
 #collectapi (session processing)
 class CollectStartView(APIView):
     def post(self, request):
-        api_key = request.data.get('api_key')
-        visitor_id = request.data.get('visitor_id')
+        data = get_request_data(request)
+
+        api_key = data.get('api_key')
+        visitor_id = data.get('visitor_id')
         
         try:
             site = validate_api_key(api_key)
@@ -91,7 +112,7 @@ class CollectStartView(APIView):
 
 
             # Log Page View
-            page_url = request.data.get('page_url')
+            page_url = data.get('page_url')
             if not page_url:
                 return Response({
                     "status": False,
@@ -149,8 +170,10 @@ class CollectStartView(APIView):
 #ping_api
 class CollectPingView(APIView):
     def post(self, request):
-        api_key = request.data.get('api_key')
-        visitor_id = request.data.get('visitor_id')
+        data = get_request_data(request)
+
+        api_key = data.get('api_key')
+        visitor_id = data.get('visitor_id')
         
         try:
             site = validate_api_key(api_key)
@@ -204,8 +227,10 @@ class CollectPingView(APIView):
 #end_api
 class CollectEndView(APIView):
     def post(self, request):
-        api_key = request.data.get('api_key')
-        visitor_id = request.data.get('visitor_id')
+        data = get_request_data(request)
+
+        api_key = data.get('api_key')
+        visitor_id = data.get('visitor_id')
         
         try:
             site = validate_api_key(api_key)

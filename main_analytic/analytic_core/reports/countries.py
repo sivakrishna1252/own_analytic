@@ -2,6 +2,7 @@ from django.db.models import Count
 from analytic_core.models import session
 
 def countries_report(site) -> dict:
+    total_visitors = session.objects.filter(site_id=site, is_bot=False).values('visitor_id').distinct().count()
     total_sessions = session.objects.filter(site_id=site, is_bot=False).count()
     
     countries_list = []
@@ -11,18 +12,20 @@ def countries_report(site) -> dict:
             site_id=site, 
             is_bot=False
         ).values('country').annotate(
-            sessions=Count('id')
+            sessions=Count('id'),
+            visitors=Count('visitor_id', distinct=True)
         ).order_by('-sessions')
         
         for item in country_data:
             country_name = item['country'] if item['country'] else "Unknown"
             sessions_count = item['sessions']
+            visitor_count = item['visitors']
             
             percentage = round((sessions_count / total_sessions) * 100, 2)
             
             countries_list.append({
                 "country": country_name,
-                "sessions": sessions_count,
+                "visitors": visitor_count,
                 "percentage": percentage
             })
 
@@ -36,7 +39,7 @@ def countries_report(site) -> dict:
                 "site_id": str(site.site_id),
                 "site_name": site.site_name
             },
-            "total_sessions": total_sessions,
+            "total_countries": len(countries_list),
             "countries": countries_list
         }
     }

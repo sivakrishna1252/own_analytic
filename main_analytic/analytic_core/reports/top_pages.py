@@ -32,7 +32,7 @@ def top_pages(site) -> dict:
                 "site_id": str(site.site_id),
                 "site_name": site.site_name
             },
-            "total_pageviews": total_pageviews,
+            "total_pages_hits": total_pageviews,
             "pages": pages_list
         }
     }

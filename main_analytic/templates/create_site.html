@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Create Website</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --background: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            perspective: 1000px;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #response-section {
+            margin-top: 40px;
+            display: none;
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            color: var(--success);
+        }
+
+        .success-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-item {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .result-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-content {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            word-break: break-all;
+            color: #d1d5db;
+            position: relative;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .json-preview {
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            color: #10b981;
+        }
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.875rem;
+            margin-top: 12px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Connect Your Website in analytics</h1>
+
+        <div class="card" id="form-card">
+            <form id="create-site-form">
+                <div class="form-group">
+                    <label for="site_name">Website Name</label>
+                    <input type="text" id="site_name" name="site_name" placeholder="E.g. My Portfolio" required>
+                </div>
+                <div class="form-group">
+                    <label for="domain">Domain Name</label>
+                    <input type="text" id="domain" name="domain" placeholder="example.com" required>
+                </div>
+                <button type="submit" class="btn" id="submit-btn">
+                    <span class="loader" id="btn-loader"></span>
+                    <span id="btn-text">Create Website</span>
+                </button>
+                <div class="error-message" id="error-msg"></div>
+            </form>
+
+            <div id="response-section">
+                <div class="success-header">
+                    <div class="success-icon">✓</div>
+                    <h3>Website Registered Successfully!</h3>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">
+                        <span>SITE ID</span>
+                        <button class="copy-btn" onclick="copyText('site-id-val')">Copy</button>
+                    </div>
+                    <div class="result-content" id="site-id-val"></div>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Use this ID to visualize
+                        data in your dashboard.</p>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">
+                        <span>API KEY</span>
+                        <button class="copy-btn" onclick="copyText('api-key-val')">Copy</button>
+                    </div>
+                    <div class="result-content" id="api-key-val"></div>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Keep this private. It
+                        identifies your website securely.</p>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">
+                        <span>Tracking Script</span>
+                        <button class="copy-btn" onclick="copyText('script-val')">Copy</button>
+                    </div>
+                    <div class="result-content" id="script-val"></div>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Copy and paste this into
+                        the &lt;head&gt; of your website.</p>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">
+                        <span>Raw API Response</span>
+                    </div>
+                    <pre class="result-content json-preview" id="json-val"></pre>
+                </div>
+
+                <button class="btn" onclick="location.reload()"
+                    style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); margin-bottom: 12px;">
+                    Add Another Website
+                </button>
+                <a href="/dashboard/" class="btn" style="text-decoration: none;">
+                    Go to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('create-site-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+        const errorMsg = document.getElementById('error-msg');
+        const responseSection = document.getElementById('response-section');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // UI States
+            submitBtn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'block';
+            errorMsg.style.display = 'none';
+
+            const formData = {
+                site_name: document.getElementById('site_name').value,
+                domain: document.getElementById('domain').value
+            };
+
+            try {
+                const response = await fetch('/api/sites/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Success
+                    form.style.display = 'none';
+                    responseSection.style.display = 'block';
+
+                    const siteId = data.site.site_id;
+                    const apiKey = data.api_key;
+
+                    document.getElementById('site-id-val').textContent = siteId;
+                    document.getElementById('api-key-val').textContent = apiKey;
+
+                    // Improved script display with both IDs
+                    const baseUrl = window.location.origin;
+                    const scriptTag = `<script async src="${baseUrl}/tracker.js" data-api-key="${apiKey}" data-site-id="${siteId}"><\/script>`;
+                    document.getElementById('script-val').textContent = scriptTag;
+
+                    document.getElementById('json-val').textContent = JSON.stringify(data, null, 2);
+                } else {
+                    // Error
+                    errorMsg.textContent = data.message || "Failed to create website";
+                    errorMsg.style.display = 'block';
+                    submitBtn.disabled = false;
+                    btnText.style.display = 'block';
+                    btnLoader.style.display = 'none';
+                }
+            } catch (err) {
+                errorMsg.textContent = "Connection error. Is the server running?";
+                errorMsg.style.display = 'block';
+                submitBtn.disabled = false;
+                btnText.style.display = 'block';
+                btnLoader.style.display = 'none';
+            }
+        });
+
+        function copyText(id) {
+            const text = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.color = '#10b981';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.color = '';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>
