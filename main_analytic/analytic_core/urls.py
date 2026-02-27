@@ -12,3 +12,7 @@ urlpatterns = [
     path('reports/top-pages/', TopPagesReportView.as_view(), name='top-pages-report'),
     path('reports/visitors/', VisitorsReportView.as_view(), name='visitors-report'),
 ]
+
+
+
+#urls path
