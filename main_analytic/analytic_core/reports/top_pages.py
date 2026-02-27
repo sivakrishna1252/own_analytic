@@ -7,7 +7,7 @@ def top_pages(site) -> dict:
         session_id__is_bot=False
     ).count()
     
-    pages_list = []
+    pages_list = []  
     
     if total_pageviews > 0:
         pages_data = pageview.objects.filter(
