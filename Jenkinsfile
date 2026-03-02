@@ -2,50 +2,46 @@ pipeline {
     agent any
 
     environment {
-        // Change these to your actual server details
-        SERVER_IP = '72.60.219.145'
-        SERVER_USER = 'root' // or your username
-        DEPLOY_PATH = '/home/root/Analyatics' // Path where code will live on server
-        SSH_CREDENTIAL_ID = 'hostinger-ssh-key' // ID of the SSH credential you create in Jenkins
+        // Application configuration
+        APP_NAME = 'analytics-backend'
+        DOCKER_IMAGE = "analyatics-web"
     }
 
     stages {
         stage('Checkout') {
             steps {
+                // Pull code from the repository
                 checkout scm
             }
         }
 
-        stage('Deploy to Hostinger') {
+        stage('Build Image') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: env.SSH_CREDENTIAL_ID, keyFileVariable: 'SSH_KEY')]) {
-                    // 1. Create directory if not exists
-                    sh "ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} 'mkdir -p ${DEPLOY_PATH}'"
-                    
-                    // 2. Transfer files using rsync
-                    // Note: rsync needs -e to specify the custom ssh command with the key
-                    sh "rsync -avz -e 'ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no' --exclude 'venv' --exclude '.git' --exclude 'db.sqlite3' ./ ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}"
-                    
-                    // 3. Restart Docker Containers on the server
-                    sh """
-                        ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} "
-                            cd ${DEPLOY_PATH} &&
-                            docker-compose down &&
-                            docker-compose up -d --build &&
-                            docker-compose exec -T web python manage.py migrate
-                        "
-                    """
-                }
+                echo 'Building Docker Image...'
+                // Build the image using the local Dockerfile
+                sh "docker build -t ${DOCKER_IMAGE}:latest ."
+            }
+        }
+
+        stage('Deploy Local') {
+            steps {
+                echo 'Deploying application with Docker Compose...'
+                // Restarts the containers and applies migrations
+                sh """
+                    docker-compose down
+                    docker-compose up -d --build
+                    docker-compose exec -T web python manage.py migrate
+                """
             }
         }
     }
 
     post {
         success {
-            echo 'Deployment successful!'
+            echo 'Deployment successful! Application is running on port 8004.'
         }
         failure {
-            echo 'Deployment failed. Check logs.'
+            echo 'Build or Deployment failed. Please check the logs above.'
         }
     }
 }
