@@ -22,8 +22,10 @@ pipeline {
         stage('Prepare Environment') {
             steps {
                 withCredentials([file(credentialsId: 'analytics_backend_env', variable: 'ENV_FILE')]) {
-                    // Copy to root workspace where Jenkins always has permission
-                    sh "cp \$ENV_FILE .env"
+                    script {
+                        def envContent = readFile(ENV_FILE)
+                        writeFile(file: '.env', text: envContent)
+                    }
                 }
             }
         }
