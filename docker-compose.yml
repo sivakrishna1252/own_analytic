@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: Analytics
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: siva
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8004
+    volumes:
+      - ./main_analytic:/app
+    ports:
+      - "8004:8004"
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-%a+vg*y#a-i=)j=@!tmnxbt#w#sjs@pjgr2s$j2^_iwte@wqe)
+      - DB_NAME=Analytics
+      - DB_USER=postgres
+      - DB_PASSWORD=siva
+      - DB_HOST=db
+      - DB_PORT=5432
+      - ALLOWED_HOSTS=localhost,127.0.0.1,web
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
