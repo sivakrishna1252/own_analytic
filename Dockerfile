@@ -14,12 +14,11 @@ RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# Copy only requirements first to leverage Docker cache
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the project code into the container
-# Since 'main_analytic' contains 'manage.py', we copy its contents to '/app'
+# Copy the rest of the project code
 COPY main_analytic/ /app/
 
 # Expose the port the app runs on
