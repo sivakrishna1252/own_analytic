@@ -19,6 +19,14 @@ pipeline {
             }
         }
 
+        stage('Prepare Environment') {
+            steps {
+                withCredentials([file(credentialsId: 'analytics_backend_env', variable: 'ENV_FILE')]) {
+                    sh "cp \$ENV_FILE main_analytic/.env"
+                }
+            }
+        }
+
         stage('Build Image') {
             steps {
                 echo 'Building Docker Image...'
@@ -34,8 +42,14 @@ pipeline {
                 sh """
                     docker compose down
                     docker compose up -d --build
-                    docker compose exec -T web python manage.py migrate
                 """
+            }
+        }
+
+        stage('Database Migrations') {
+            steps {
+                echo 'Applying database migrations...'
+                sh "docker compose exec -T web python manage.py migrate"
             }
         }
     }
