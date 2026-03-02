@@ -24,7 +24,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'analytics_backend_env', variable: 'ENV_FILE')]) {
                     script {
                         def envContent = readFile(ENV_FILE)
-                        writeFile(file: '.env', text: envContent)
+                        writeFile(file: '.env.jenkins', text: envContent)
                     }
                 }
             }

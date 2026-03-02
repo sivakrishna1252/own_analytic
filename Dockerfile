@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the project code
 COPY main_analytic/ /app/
-COPY .env /app/
+COPY .env.jenkins /app/.env
 
 # Expose the port the app runs on
 EXPOSE 8704

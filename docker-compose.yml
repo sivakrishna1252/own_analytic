@@ -9,7 +9,7 @@ services:
     ports:
       - "8704:8704"
     env_file:
-      - .env
+      - .env.jenkins
     # Note: If the database is on the host, use 'host.docker.internal' or the VPS IP as DB_HOST in .env
     # And if on Linux, you might need extra_hosts to resolve host.docker.internal
     extra_hosts:
