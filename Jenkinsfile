@@ -28,9 +28,9 @@ pipeline {
                 echo 'Deploying application with Docker Compose...'
                 // Restarts the containers and applies migrations
                 sh """
-                    docker-compose down
-                    docker-compose up -d --build
-                    docker-compose exec -T web python manage.py migrate
+                    docker compose down
+                    docker compose up -d --build
+                    docker compose exec -T web python manage.py migrate
                 """
             }
         }
