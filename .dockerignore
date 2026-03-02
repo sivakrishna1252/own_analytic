@@ -7,7 +7,7 @@ __pycache__/
 .DS_Store
 .git
 .gitignore
-.env
+# .env is removed from here so COPY .env works in Dockerfile
 Dockerfile
 docker-compose.yml
 node_modules/
