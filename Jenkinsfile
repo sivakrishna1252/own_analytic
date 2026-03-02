@@ -18,17 +18,17 @@ pipeline {
 
         stage('Deploy to Hostinger') {
             steps {
-                sshagent([env.SSH_CREDENTIAL_ID]) {
+                withCredentials([sshUserPrivateKey(credentialsId: env.SSH_CREDENTIAL_ID, keyFileVariable: 'SSH_KEY')]) {
                     // 1. Create directory if not exists
-                    sh "ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} 'mkdir -p ${DEPLOY_PATH}'"
+                    sh "ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} 'mkdir -p ${DEPLOY_PATH}'"
                     
-                    // 2. Transfer files using rsync (fastest way)
-                    // We exclude venv, .git, and local db files
-                    sh "rsync -avz --exclude 'venv' --exclude '.git' --exclude 'db.sqlite3' ./ ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}"
+                    // 2. Transfer files using rsync
+                    // Note: rsync needs -e to specify the custom ssh command with the key
+                    sh "rsync -avz -e 'ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no' --exclude 'venv' --exclude '.git' --exclude 'db.sqlite3' ./ ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}"
                     
                     // 3. Restart Docker Containers on the server
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} "
+                        ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} "
                             cd ${DEPLOY_PATH} &&
                             docker-compose down &&
                             docker-compose up -d --build &&
