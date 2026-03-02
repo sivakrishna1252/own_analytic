@@ -22,7 +22,7 @@ pipeline {
         stage('Prepare Environment') {
             steps {
                 withCredentials([file(credentialsId: 'analytics_backend_env', variable: 'ENV_FILE')]) {
-                    sh "cp \$ENV_FILE main_analytic/.env"
+                    sh "sudo cp \$ENV_FILE main_analytic/.env"
                 }
             }
         }
