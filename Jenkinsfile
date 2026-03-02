@@ -22,7 +22,8 @@ pipeline {
         stage('Prepare Environment') {
             steps {
                 withCredentials([file(credentialsId: 'analytics_backend_env', variable: 'ENV_FILE')]) {
-                    sh "sudo cp \$ENV_FILE main_analytic/.env"
+                    // Copy to root workspace where Jenkins always has permission
+                    sh "cp \$ENV_FILE .env"
                 }
             }
         }
