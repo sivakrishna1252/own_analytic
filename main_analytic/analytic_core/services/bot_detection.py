@@ -1,5 +1,7 @@
 from user_agents import parse
 
+
+#bot checking
 def is_bot_request(user_agent_string):
     if not user_agent_string:
         return False
