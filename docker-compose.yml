@@ -17,11 +17,11 @@ services:
 
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8004
+    command: python manage.py runserver 0.0.0.0:8704
     volumes:
       - ./main_analytic:/app
     ports:
-      - "8004:8004"
+      - "8704:8704"
     environment:
       - DEBUG=True
       - SECRET_KEY=django-insecure-%a+vg*y#a-i=)j=@!tmnxbt#w#sjs@pjgr2s$j2^_iwte@wqe)

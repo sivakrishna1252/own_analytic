@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY main_analytic/ /app/
 
 # Expose the port the app runs on
-EXPOSE 8004
+EXPOSE 8704
 
 # Run the application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8004"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8704"]
