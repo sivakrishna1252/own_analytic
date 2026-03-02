@@ -275,7 +275,7 @@
                 <div class="result-item">
                     <div class="result-label">
                         <span>SITE ID</span>
-                        <button class="copy-btn" onclick="copyText('site-id-val')">Copy</button>
+                        <button class="copy-btn" onclick="copyText('site-id-val', this)">Copy</button>
                     </div>
                     <div class="result-content" id="site-id-val"></div>
                     <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Use this ID to visualize
@@ -285,7 +285,7 @@
                 <div class="result-item">
                     <div class="result-label">
                         <span>API KEY</span>
-                        <button class="copy-btn" onclick="copyText('api-key-val')">Copy</button>
+                        <button class="copy-btn" onclick="copyText('api-key-val', this)">Copy</button>
                     </div>
                     <div class="result-content" id="api-key-val"></div>
                     <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Keep this private. It
@@ -295,7 +295,7 @@
                 <div class="result-item">
                     <div class="result-label">
                         <span>Tracking Script</span>
-                        <button class="copy-btn" onclick="copyText('script-val')">Copy</button>
+                        <button class="copy-btn" onclick="copyText('script-val', this)">Copy</button>
                     </div>
                     <div class="result-content" id="script-val"></div>
                     <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Copy and paste this into
@@ -387,10 +387,10 @@
             }
         });
 
-        function copyText(id) {
+        function copyText(id, btn) {
             const text = document.getElementById(id).textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                const btn = event.target;
+
+            function showSuccess() {
                 const originalText = btn.textContent;
                 btn.textContent = 'Copied!';
                 btn.style.color = '#10b981';
@@ -398,7 +398,43 @@
                     btn.textContent = originalText;
                     btn.style.color = '';
                 }, 2000);
-            });
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                // Modern Clipboard API
+                navigator.clipboard.writeText(text)
+                    .then(showSuccess)
+                    .catch(err => {
+                        console.error('Clipboard API failed, trying fallback', err);
+                        fallbackCopy(text, showSuccess);
+                    });
+            } else {
+                // Fallback for non-secure contexts (HTTP)
+                fallbackCopy(text, showSuccess);
+            }
+        }
+
+        function fallbackCopy(text, callback) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+
+            // Ensure the textarea is not visible but part of the DOM
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful && callback) callback();
+            } catch (err) {
+                console.error('Fallback Copy failed', err);
+            }
+
+            document.body.removeChild(textArea);
         }
     </script>
 </body>
