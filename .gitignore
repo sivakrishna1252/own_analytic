@@ -161,6 +161,4 @@ cython_debug/
 .vscode/
 
 # Project specific
-tracker.js
-static/
 media/
