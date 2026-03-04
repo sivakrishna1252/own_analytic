@@ -61,7 +61,7 @@
 
     // 4. Heartbeat Module (Ping)
     function startHeartbeat() {
-        setInterval(async () => {
+        const sendPing = async () => {
             const payload = {
                 api_key: apiKey,
                 site_id: siteId,
@@ -77,7 +77,13 @@
             } catch (e) {
                 // Fail silently
             }
-        }, 20000); // 20 seconds           #pings in website 
+        };
+
+        // Send initial ping immediately
+        sendPing();
+
+        // Repeat every 2 minutes (120,000 ms)
+        setInterval(sendPing, 120000);
     }
 
 

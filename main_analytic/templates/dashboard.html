@@ -323,7 +323,7 @@
 
     <div class="container">
         <header>
-            <h1>Analytics Dashboard</h1>
+            <h1 onclick="resetDashboard()" style="cursor: pointer;" title="Reset Dashboard">Analytics Dashboard</h1>
             <div class="search-box">
                 <input type="text" id="site-id-input" placeholder="Enter Site ID">
                 <button class="btn" onclick="loadDashboard()">Analyze</button>
@@ -411,6 +411,18 @@
         let countriesChart = null;
         let currentSiteId = null;
 
+        // Handle browser Back/Forward buttons
+        window.addEventListener('popstate', (event) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const siteId = urlParams.get('site_id');
+            if (siteId) {
+                document.getElementById('site-id-input').value = siteId;
+                loadDashboard(true);
+            } else {
+                clearDashboardUI();
+            }
+        });
+
         // Load site from URL or LocalStorage on startup
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -421,11 +433,26 @@
 
             if (siteIdToLoad) {
                 document.getElementById('site-id-input').value = siteIdToLoad;
-                loadDashboard();
+                loadDashboard(true);
             }
         });
 
-        async function loadDashboard() {
+        function resetDashboard() {
+            localStorage.removeItem('last_site_id');
+            const newUrl = window.location.pathname;
+            window.history.pushState({}, '', newUrl);
+            clearDashboardUI();
+        }
+
+        function clearDashboardUI() {
+            document.getElementById('site-id-input').value = '';
+            document.getElementById('initial-state').style.display = 'block';
+            document.getElementById('dashboard-content').style.display = 'none';
+            if (countriesChart) countriesChart.destroy();
+            countriesChart = null;
+        }
+
+        async function loadDashboard(isPopState = false) {
             const siteId = document.getElementById('site-id-input').value.trim();
             if (!siteId) return alert("Please enter a Site ID");
 
@@ -433,9 +460,11 @@
             localStorage.setItem('last_site_id', siteId);
             currentSiteId = siteId;
 
-            // Update URL without refreshing to allow easy bookmarking/copy-paste
-            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?site_id=' + siteId;
-            window.history.pushState({ path: newUrl }, '', newUrl);
+            if (!isPopState) {
+                // Update URL without refreshing to allow easy bookmarking/copy-paste
+                const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?site_id=' + siteId;
+                window.history.pushState({ siteId: siteId }, '', newUrl);
+            }
 
             document.getElementById('loading-overlay').style.display = 'flex';
 
