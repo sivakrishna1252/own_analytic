@@ -409,10 +409,33 @@
 
     <script>
         let countriesChart = null;
+        let currentSiteId = null;
+
+        // Load site from URL or LocalStorage on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const siteIdFromUrl = urlParams.get('site_id');
+            const siteIdFromStorage = localStorage.getItem('last_site_id');
+
+            const siteIdToLoad = siteIdFromUrl || siteIdFromStorage;
+
+            if (siteIdToLoad) {
+                document.getElementById('site-id-input').value = siteIdToLoad;
+                loadDashboard();
+            }
+        });
 
         async function loadDashboard() {
             const siteId = document.getElementById('site-id-input').value.trim();
             if (!siteId) return alert("Please enter a Site ID");
+
+            // Save to local storage for persistence
+            localStorage.setItem('last_site_id', siteId);
+            currentSiteId = siteId;
+
+            // Update URL without refreshing to allow easy bookmarking/copy-paste
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?site_id=' + siteId;
+            window.history.pushState({ path: newUrl }, '', newUrl);
 
             document.getElementById('loading-overlay').style.display = 'flex';
 
