@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import CreateSiteView, TestApiKeyView, CollectStartView, CollectPingView, CollectEndView, OverviewView, CountriesReportView, TopPagesReportView, VisitorsReportView
+from .api.dashboard_api import AnalyticsDashboardAPI
 
 urlpatterns = [
     path('sites/create/', CreateSiteView.as_view(), name='create-site'),
@@ -11,6 +12,7 @@ urlpatterns = [
     path('reports/countries/', CountriesReportView.as_view(), name='countries-report'),
     path('reports/top-pages/', TopPagesReportView.as_view(), name='top-pages-report'),
     path('reports/visitors/', VisitorsReportView.as_view(), name='visitors-report'),
+    path('reports/dashboard/', AnalyticsDashboardAPI.as_view(), name='dashboard-api'),
 ]
 
 
