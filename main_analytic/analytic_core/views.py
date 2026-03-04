@@ -200,11 +200,8 @@ class CollectPingView(APIView):
                     "message": "Ignored: No active session"
                 }, status=status.HTTP_200_OK)
                 
-            now = timezone.now()
-            active_session.last_activity = now
-            delta = now - active_session.start_time
-            active_session.duration = int(delta.total_seconds())
-            active_session.save(update_fields=['last_activity', 'duration'])
+            active_session.last_activity = timezone.now()
+            active_session.save(update_fields=['last_activity'])
             
             return Response({
                 "status": True,

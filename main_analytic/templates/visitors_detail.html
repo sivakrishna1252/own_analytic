@@ -243,7 +243,7 @@
                 document.getElementById('site-title').textContent = `Visitor Details: ${result.data.site.site_name}`;
                 document.getElementById('total-count-badge').textContent = `${result.data.total_visitors} Visitors`;
 
-                // Sort visitors: Most recent activity first
+                // Sort visitors: Latest visit first
                 const sortedVisitors = result.data.visitors.sort((a, b) => {
                     return new Date(b.last_visit) - new Date(a.last_visit);
                 });
@@ -278,8 +278,7 @@
                     <tr>
                         <td>
                             <div class="meta-info">
-                                <span class="visitor-id" style="font-size: 0.8rem; word-break: break-all; max-width: 150px;" title="External ID: ${v.visitor_id}">${v.visitor_id.substring(0, 18)}...</span>
-                                <span class="meta-sub" style="font-family: monospace; font-size: 0.65rem;" title="Internal DB ID">DB ID: ${v.id.substring(0, 13)}...</span>
+                                <span class="visitor-id" style="font-size: 0.8rem; word-break: break-all; max-width: 150px;">${v.visitor_id}</span>
                                 <div style="margin-top: 5px;">${statusBadge}</div>
                             </div>
                         </td>

@@ -13,27 +13,26 @@ def get_visitors_report(site) -> dict:
     visitors_list = []
     for v in visitors_qs:
 
-        # Calculate duration including active sessions
+        time_data_closed = session.objects.filter(
+            visitor_id=v,
+            is_bot=False,
+            end_time__isnull=False
+        ).aggregate(total_time=Sum('duration'))['total_time'] or 0
+
+        # Calculate live duration for active sessions
         active_sessions = session.objects.filter(
             visitor_id=v,
             is_bot=False,
             end_time__isnull=True
         )
         
-        active_time = 0
-        now = timezone.now()
+        live_duration = 0
         for s in active_sessions:
-            if s.start_time:
-                delta = now - s.start_time
-                active_time += int(delta.total_seconds())
+            if s.last_activity:
+                diff = s.last_activity - s.start_time
+                live_duration += int(diff.total_seconds())
 
-        completed_time_data = session.objects.filter(
-            visitor_id=v,
-            is_bot=False,
-            end_time__isnull=False
-        ).aggregate(total_time=Sum('duration'))
-        
-        total_time_spent = (completed_time_data['total_time'] or 0) + active_time
+        total_time_spent = time_data_closed + live_duration
 
         pages_qs = pageview.objects.filter(
             session_id__visitor_id=v,
@@ -51,8 +50,7 @@ def get_visitors_report(site) -> dict:
         ).order_by('-start_time').first()
 
         visitors_list.append({
-            "id": str(v.id),  # Internal DB ID
-            "visitor_id": v.visitor_id, # External LocalStorage ID
+            "visitor_id": v.visitor_id,
             "ip_address": latest_session.ip_address if latest_session else "Unknown",
             "country": latest_session.country if latest_session else "Unknown",
             "browser": latest_session.browser if latest_session else "Unknown",
